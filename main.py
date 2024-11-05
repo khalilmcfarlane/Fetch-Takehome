@@ -1,9 +1,10 @@
-import requests
 import sys
 import time
+
+import requests
 import yaml
 
-from api_endpoint import ApiEndpoint
+from api_endpoint import ApiEndpoint, associate_endpoints_with_domain
 
 
 def main():
@@ -20,27 +21,22 @@ def main():
         print("Too many arguments. Usage: python main.py <file_name>")
         sys.exit(1)
     data = parse_yaml(sys.argv[1])
-    # = requests.get
-    # Maybe create endpoint class?
-    # If "method not in dict", set method=GET
-    # If headers not in dict, don't add; if using class rep as dict
-    # If body not in, don't send in request. Body is in json format (dict) use json.loads
-    # ex: data = {"id": 1001} requests.post(url, json=data)
-    # print(data)
+
     endpoints = create_endpoints(data)
-    for elem in endpoints:
-        start = time.time() * 1000
-        response = requests.request(elem.method, url=elem.url, headers=elem.headers, data=elem.body)
-        end = time.time() * 1000
-        response_time = end - start
-        print(response_time)
-        #print(f"Requests's response time: {response.elapsed.microseconds}")
-        if is_up(response, response_time):
-            elem.up_requests += 1
-        elem.total_requests += 1
-        time.sleep(2)
-        #print(response.text)
-    # Test each endpoint every 15 seconds
+    domain_mapping = associate_endpoints_with_domain(endpoints)
+    for domain, endpoint_list in domain_mapping.items():
+        up = 0
+        total = 0
+        for endpoint in endpoint_list:
+            start = time.time()
+            response = requests.request(endpoint.method, url=endpoint.url, headers=endpoint.headers, data=endpoint.body)
+            end = time.time()
+            response_time = (end - start) * 1000
+            if is_up(response, response_time):
+                up += 1
+            total += 1
+            time.sleep(2)
+        print_result(domain, up, total)
 
 
 def create_endpoints(data):
@@ -71,17 +67,18 @@ def is_up(res, response_time):
     """
      If HTTP Response code is between 200-299 and response latency is less than 500 ms, return True.
      """
-    if res.ok and response_time < 500:
+    if 200 <= res.status_code < 300 and response_time < 500:
         return True
     return False
 
 
-def print_result():
+def print_result(domain, up, total):
     """
      Print availability percentage of all endpoints.
      Availability = 100 * (Up / Total HTTP Requests)
      """
-    pass
+    availability_percentage = round(100 * (up / total))
+    print(f"{domain} has {availability_percentage}% availability percentage")
 
 
 if __name__ == "__main__":
