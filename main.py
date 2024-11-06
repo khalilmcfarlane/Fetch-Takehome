@@ -1,5 +1,6 @@
 import sys
 import time
+from collections import defaultdict
 from typing import List
 
 import yaml
@@ -25,10 +26,14 @@ def main():
 
     endpoints = create_endpoints(data)
     domain_mapping = associate_endpoints_with_domain(endpoints)
+    domain_up_time = defaultdict(int)
+    domain_total_time = defaultdict(int)
+
     while True:
         for domain, endpoint_list in domain_mapping.items():
             up = 0
             total = 0
+
             for endpoint in endpoint_list:
                 start = time.time()
                 response = request(endpoint.method, url=endpoint.url, headers=endpoint.headers, data=endpoint.body)
@@ -38,7 +43,12 @@ def main():
                     up += 1
                 total += 1
                 time.sleep(15)
-            print_availability_percentage(domain, up, total)
+
+            domain_up_time[domain] += up
+            domain_total_time[domain] += total
+            total_up = domain_up_time[domain]
+            total_requests = domain_total_time[domain]
+            print_availability_percentage(domain, total_up, total_requests)
 
 
 def create_endpoints(data: List) -> List[ApiEndpoint]:
