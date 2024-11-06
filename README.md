@@ -8,6 +8,7 @@ See [Health-check.pdf](https://github.com/khalilmcfarlane/Fetch-Takehome/blob/ma
 1. `python main.py <test.yaml>`
    1. **NOTE:** If using Mac, run `python3 main.py <yaml_file>`
    2. Works on any YAML file.
+2. Press `Ctrl/CMD + C to stop program.`
 
 ## Dependencies
 1. `python version >= 3.5`

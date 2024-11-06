@@ -25,19 +25,20 @@ def main():
 
     endpoints = create_endpoints(data)
     domain_mapping = associate_endpoints_with_domain(endpoints)
-    for domain, endpoint_list in domain_mapping.items():
-        up = 0
-        total = 0
-        for endpoint in endpoint_list:
-            start = time.time()
-            response = request(endpoint.method, url=endpoint.url, headers=endpoint.headers, data=endpoint.body)
-            end = time.time()
-            response_time = (end - start) * 1000
-            if is_up(response, response_time):
-                up += 1
-            total += 1
-            time.sleep(15)
-        print_result(domain, up, total)
+    while True:
+        for domain, endpoint_list in domain_mapping.items():
+            up = 0
+            total = 0
+            for endpoint in endpoint_list:
+                start = time.time()
+                response = request(endpoint.method, url=endpoint.url, headers=endpoint.headers, data=endpoint.body)
+                end = time.time()
+                response_time = (end - start) * 1000
+                if is_up(response, response_time):
+                    up += 1
+                total += 1
+                time.sleep(15)
+            print_availability_percentage(domain, up, total)
 
 
 def create_endpoints(data: List) -> List[ApiEndpoint]:
@@ -89,7 +90,7 @@ def is_up(res: Response, response_time: float) -> bool:
     return False
 
 
-def print_result(domain: str, up: int, total: int) -> None:
+def print_availability_percentage(domain: str, up: int, total: int) -> None:
     """
      Print availability percentage of all endpoints.
      Availability = 100 * (Up / Total HTTP Requests)
