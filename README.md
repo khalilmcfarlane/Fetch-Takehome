@@ -5,14 +5,18 @@ Fetch Take-Home Exercise — Site Reliability Engineering Overview: Implement a 
 See [Health-check.pdf](https://github.com/khalilmcfarlane/Fetch-Takehome/blob/main/health-check.pdf) for more info.
 
 ## Steps to run
-1. `python main.py <yaml_file>`
+1. `python main.py <test.yaml>`
+   1. **NOTE:** If using Mac, run `python3 main.py <yaml_file>`
+   2. Works on any YAML file.
 
 ## Dependencies
 1. `python version >= 3.5`
-2. `pyyaml`
-3. `requests`
+2. `pip install pyyaml`
+3. `pip install requests`
+<br>
+Use `pip3` instead if on Mac.
 
 
 **NOTE**: Typing module is used to support lower python versions.
 
-Code follows PEP 8 Standard
+Code follows PEP 8 Standard.
