@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List
+from typing import DefaultDict, List
 from urllib.parse import urlparse
 
 
@@ -13,18 +13,24 @@ class ApiEndpoint:
         self.total_requests = total_requests
 
 
-def get_main_domain(url):
+def get_main_domain(url: str) -> str:
     """
     Parse domain from url.
+
+    :param str url: URL parsed from yaml file
+    :return: URL domain
+    :rtype: str
     """
     parsed_url = urlparse(url)
     return parsed_url.netloc
 
 
-def associate_endpoints_with_domain(endpoints: List[ApiEndpoint]):
+def associate_endpoints_with_domain(endpoints: List[ApiEndpoint]) -> DefaultDict[str, List[ApiEndpoint]]:
     """
     Return dictionary mapping domain to list of subdomains
-    String to List[ApiEndpoint] Mapping
+    :param List[ApiEndpoint] endpoints: List of URL endpoints
+    :return: Mapping of domain to list of subdomains
+    :rtype: DefaultDict[str, List[ApiEndpoint]]
     """
     domain_mapping = defaultdict(list)
 
